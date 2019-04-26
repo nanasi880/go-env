@@ -1,4 +1,4 @@
-package main // import "go.nanasi880.dev/goenv/go"
+package main // import "go.nanasi880.dev/env/go"
 
 import (
 	"bytes"
