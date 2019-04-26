@@ -3,6 +3,7 @@ package main // import "go.nanasi880.dev/goenv/go"
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -67,6 +68,32 @@ func getenv(key string, def string) string {
 func loadEnv() {
 	installLocation = getenv("GOENV_LOCATION", "/usr/local/go/bin")
 	userInstructedGoCmd = os.Getenv("GOCMD")
+	if userInstructedGoCmd == "" {
+		p := projectRootPath()
+		if p != "" {
+			userInstructedGoCmd = readGoVersion(p)
+		}
+	}
+}
+
+func projectRootPath() string {
+	out, err := exec.Command("git", "rev-parse", "--show-toplevel").Output()
+	if err != nil {
+		return ""
+	}
+	return string(removeNewLine(out))
+}
+
+func readGoVersion(path string) string {
+	b, err := ioutil.ReadFile(filepath.Join(path, ".go-version"))
+	if err != nil {
+		return ""
+	}
+	return "go" + string(removeNewLine(b))
+}
+
+func removeNewLine(b []byte) []byte {
+	return bytes.TrimRight(b, "\n")
 }
 
 // execGo is execution Go command and os.Args[1:] will transfer.
