@@ -85,13 +85,7 @@ func projectRootPath() string {
 }
 
 func readGoVersion(path string) string {
-	f, err := os.Open(path + "/.go-version")
-	if err != nil {
-		return ""
-	}
-	defer f.Close()
-
-	b, err := ioutil.ReadAll(f)
+	b, err := ioutil.ReadFile(filepath.Join(path, ".go-version"))
 	if err != nil {
 		return ""
 	}
@@ -99,7 +93,7 @@ func readGoVersion(path string) string {
 }
 
 func removeNewLine(b []byte) []byte {
-	return b[:len(b)-1]
+	return bytes.TrimRight(b, "\n")
 }
 
 // execGo is execution Go command and os.Args[1:] will transfer.
